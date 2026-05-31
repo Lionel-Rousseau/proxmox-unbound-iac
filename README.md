@@ -230,7 +230,7 @@ Le script est volontairement destructif. Il doit être utilisé sur un environne
 ## Journal d'exécution anonymisé
 
 
-Un journal d'exécution anonymisé, issu d'un environnement réel maîtrisé, est disponible dans
+Un journal d'exécution anonymisé, issu d'un environnement réel est disponible dans
 [docs/sample_run.log](docs/sample_run.log).
 
 
