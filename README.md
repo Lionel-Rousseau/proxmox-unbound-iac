@@ -73,6 +73,13 @@ flowchart TB
     style NET stroke:#D50000,color:#D50000,fill:#FFCDD2
     style admin stroke:#e879f9,fill:#FFCDD2,color:#e879f9
     style pve stroke:#2962FF,fill:#BBDEFB,color:#2962FF
+    linkStyle 0 stroke:#FF6D00,fill:none
+    linkStyle 1 stroke:#FF6D00,fill:none
+    linkStyle 2 stroke:#FF6D00,fill:none
+    linkStyle 3 stroke:#FF6D00,fill:none
+    linkStyle 4 stroke:#FF6D00,fill:none
+    linkStyle 5 stroke:#FF6D00
+    linkStyle 6 stroke:#FF6D00,fill:none
 ```
 
 ---
