@@ -183,6 +183,7 @@ ok "Terraform init/validate OK"
 log "Destruction Terraform ciblée du LXC $VMID"
 if terraform state list | grep -qx "$TF_RESOURCE"; then
   terraform destroy -target="$TF_RESOURCE" -auto-approve
+  # L’usage de -target est volontaire ici dans le cadre du scénario de rebuild contrôlé d’une ressource unique (environnement pour exemple).
   ok "LXC détruit via Terraform"
 else
   ok "Aucune ressource Terraform existante à détruire"
