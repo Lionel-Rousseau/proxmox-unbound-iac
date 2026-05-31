@@ -9,9 +9,9 @@ ansible/roles/unbound/files/certs/privkey.pem
 ```
 ---
 
-## Setting
+## Désactivation de DoT
 
-Dans le cas ou il n'y a pas de DoT :
+Si DNS-over-TLS n'est pas utilisé, désactiver l'option suivante :
 ```text
 unbound_tls_enabled: false
 ```
