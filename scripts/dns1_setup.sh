@@ -190,7 +190,7 @@ else
   ok "Aucune ressource Terraform existante à détruire"
 fi
 
-ssh-keygen -f /root/.ssh/known_hosts -R "$DNS_IP" >/dev/null 2>&1 || true
+ssh-keygen -f "$KNOWN_HOSTS" -R "$DNS_IP" >/dev/null 2>&1 || true
 ok "known_hosts nettoyé avant recréation"
 
 log "Création du LXC DNS via Terraform"
