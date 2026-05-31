@@ -12,6 +12,7 @@ ansible/roles/unbound/files/certs/privkey.pem
 ## Setting
 
 Dans le cas ou il n'y a pas de DoT :
+```text
 unbound_tls_enabled: false
-
+```
 ---
