@@ -229,13 +229,16 @@ Le script est volontairement destructif. Il doit être utilisé sur un environne
 ---
 ## Journal d'exécution anonymisé
 
+
 Un journal d'exécution anonymisé, issu d'un environnement réel maîtrisé, est disponible dans
 [docs/sample_run.log](docs/sample_run.log).
+
 
 Ce fichier sert d'illustration technique : il montre le déroulé complet d'un rebuild validé
 Terraform → Ansible → tests DNS/DNSSEC/DoT et est extrait d'un environnement réel. Il ne représente 
 donc pas fidèlement la sortie du script public présenté ici : les valeurs d'inventaire, hostnames, adresses IP,
 certificats, clés et certains libellés ont été anonymisés ou adaptés pour cette publication.
+
 ---
 
 ## Tests réalisés
