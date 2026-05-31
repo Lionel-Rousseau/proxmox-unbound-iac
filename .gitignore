@@ -15,6 +15,7 @@ ansible/roles/unbound/files/certs/*.csr
 
 # Logs
 *.log
+!docs/*.log
 /tmp/
 
 # Editors
