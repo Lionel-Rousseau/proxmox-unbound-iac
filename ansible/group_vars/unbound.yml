@@ -1,5 +1,5 @@
 unbound_listen_ipv4: "0.0.0.0"
-unbound_listen_ipv6: "::0"
+unbound_listen_ipv6: "::"
 unbound_enable_ipv6: false
 
 unbound_tls_enabled: true
