@@ -23,7 +23,7 @@ resource "proxmox_virtual_environment_container" "unbound_01" {
   start_on_boot = true
 
   features {
-    # A adapter selon les cas
+    # Option conservée pour certains scénarios, à désactiver si inutile.
     nesting = true
   }
 
