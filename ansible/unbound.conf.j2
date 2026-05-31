@@ -1,0 +1,81 @@
+server:
+  interface: {{ unbound_listen_ipv4 }}
+{% if unbound_enable_ipv6 | bool %}
+  interface: {{ unbound_listen_ipv6 }}
+{% endif %}
+{% if unbound_tls_enabled | bool %}
+  interface: {{ unbound_listen_ipv4 }}@{{ unbound_tls_port }}
+{% if unbound_enable_ipv6 | bool %}
+  interface: {{ unbound_listen_ipv6 }}@{{ unbound_tls_port }}
+{% endif %}
+{% endif %}
+
+  port: 53
+  do-ip4: yes
+  do-ip6: {{ 'yes' if unbound_enable_ipv6 | bool else 'no' }}
+  do-udp: yes
+  do-tcp: yes
+
+{% if unbound_tls_enabled | bool %}
+  tls-port: {{ unbound_tls_port }}
+  tls-service-key: {{ unbound_tls_service_key }}
+  tls-service-pem: {{ unbound_tls_service_pem }}
+{% endif %}
+
+{% for subnet in unbound_allowed_subnets %}
+  access-control: {{ subnet }} allow
+{% endfor %}
+
+{% for private_address in unbound_private_addresses %}
+  private-address: {{ private_address }}
+{% endfor %}
+
+  root-hints: {{ unbound_root_hints_path }}
+
+  harden-dnssec-stripped: yes
+  aggressive-nsec: yes
+  qname-minimisation: yes
+  hide-identity: yes
+  hide-version: yes
+  use-caps-for-id: no
+  prefetch: yes
+
+  cache-min-ttl: 60
+  cache-max-ttl: 14400
+  rrset-cache-size: {{ unbound_rrset_cache_size }}
+  msg-cache-size: {{ unbound_msg_cache_size }}
+  num-threads: {{ unbound_num_threads }}
+  so-reuseport: yes
+
+  logfile: {{ unbound_logfile }}
+  verbosity: 1
+  log-time-ascii: yes
+  log-servfail: yes
+
+  local-zone: "{{ unbound_local_zone }}" transparent
+
+{% for record in unbound_local_records %}
+  local-data: "{{ record.name }} {{ record.type }} {{ record.value }}"
+{% endfor %}
+
+{% for record in unbound_ptr_records %}
+  local-data: "{{ record.ptr }} PTR {{ record.value }}"
+{% endfor %}
+
+remote-control:
+  control-enable: yes
+
+{% if unbound_dnstap_enabled | bool %}
+dnstap:
+  dnstap-enable: yes
+  dnstap-ip: {{ unbound_dnstap_ip }}
+  dnstap-tls: no
+  dnstap-log-client-query-messages: yes
+  dnstap-log-client-response-messages: no
+  dnstap-log-resolver-query-messages: no
+  dnstap-log-resolver-response-messages: no
+  dnstap-log-forwarder-query-messages: no
+  dnstap-log-forwarder-response-messages: no
+  dnstap-send-identity: yes
+  dnstap-identity: "{{ unbound_dnstap_identity }}"
+{% endif %}
