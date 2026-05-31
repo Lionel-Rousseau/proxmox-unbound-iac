@@ -63,9 +63,16 @@ flowchart TB
     classDef host fill:#eef2ff,stroke:#818cf8
     classDef client fill:#f0fdf4,stroke:#4ade80
     classDef net fill:#f0f9ff,stroke:#38bdf8
+    style TF color:#e879f9
+    style AN color:#e879f9
+    style SH color:#e879f9
+    style UB color:#2962FF
+    style API color:#2962FF
+    style lxc color:#2962FF
+    style CL color:#00C853
     style NET stroke:#D50000,color:#D50000,fill:#FFCDD2
-    style admin stroke:#e879f9,fill:#FFCDD2
-    style pve stroke:#2962FF,fill:#BBDEFB
+    style admin stroke:#e879f9,fill:#FFCDD2,color:#e879f9
+    style pve stroke:#2962FF,fill:#BBDEFB,color:#2962FF
 ```
 
 ---
