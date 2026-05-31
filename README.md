@@ -29,6 +29,9 @@ Terraform  -> crée le LXC Proxmox
 Ansible    -> installe et configure Unbound
 Bash       -> reconstruit et teste le service de bout en bout
 ```
+---
+
+## Schéma
 
 ```mermaid
 flowchart TB
