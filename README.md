@@ -31,6 +31,17 @@ Bash       -> reconstruit et teste le service de bout en bout
 ```
 ---
 
+## Compétences démontrées
+
+- Infrastructure as Code avec Terraform sur Proxmox VE
+- automatisation de configuration avec Ansible
+- exploitation Linux & systemd
+- configuration d’un résolveur récursif Unbound
+- DNSSEC, DNS-over-TLS, root hints, trust anchor
+- validation technique automatisée par script Bash
+- anonymisation d’un cas réel pour publication portfolio
+---
+
 ## Schéma
 
 ```mermaid
