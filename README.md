@@ -64,8 +64,8 @@ flowchart TB
     classDef client fill:#f0fdf4,stroke:#4ade80
     classDef net fill:#f0f9ff,stroke:#38bdf8
     style NET stroke:#D50000,color:#D50000,fill:#FFCDD2
-    style admin stroke:#e879f9
-    style pve stroke:#2962FF
+    style admin stroke:#e879f9,fill:#FFCDD2
+    style pve stroke:#2962FF,fill:#BBDEFB
 ```
 
 ---
