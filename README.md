@@ -285,7 +285,7 @@ Elle documente une pratique d'exploitation :
 - tests techniques reproductibles ;
 - publication anonymisée.
 
-`transparent` est utilisé (zone-local dans [ansible/roles/unbound/templates/unbound.conf.j2](ansible/roles/unbound/templates/unbound.conf.j2)) pour ne définir que quelques enregistrements locaux tout en conservant la résolution récursive des autres noms. Il s'agit d'une spécificité personnelle qui est à adapter selon les besoins.
+`transparent` est utilisé (`local-zone:` dans [ansible/roles/unbound/templates/unbound.conf.j2](ansible/roles/unbound/templates/unbound.conf.j2)) pour ne définir que quelques enregistrements locaux tout en conservant la résolution récursive des autres noms. Il s'agit d'une spécificité personnelle qui est à adapter selon les besoins.
 
 Le durcissement réseau final reste à adapter selon le contexte : firewall local, filtrage Proxmox, règles OPNsense, segmentation VLAN ou ACL dédiées.
 
