@@ -11,7 +11,8 @@ ANSIBLE_GROUP="${ANSIBLE_GROUP:-dns}"
 VMID="${VMID:-150}"
 DNS_IP="${DNS_IP:-10.10.10.53}"
 DNS_HOSTNAME="${DNS_HOSTNAME:-dns1.lab.example}"
-SSH_KEY="${SSH_KEY:-/root/.ssh/id_ed25519}"
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_ed25519}"
+KNOWN_HOSTS="${KNOWN_HOSTS:-$HOME/.ssh/known_hosts}"
 TF_RESOURCE="${TF_RESOURCE:-proxmox_virtual_environment_container.unbound_01}"
 
 AUTO_YES="false"
@@ -171,7 +172,7 @@ if [[ "$AUTO_YES" != "true" ]]; then
 fi
 
 log "Nettoyage known_hosts pour $DNS_IP"
-ssh-keygen -f /root/.ssh/known_hosts -R "$DNS_IP" >/dev/null 2>&1 || true
+ssh-keygen -f "$KNOWN_HOSTS" -R "$DNS_IP" >/dev/null 2>&1 || true
 ok "Ancienne empreinte SSH supprimée si présente"
 
 log "Initialisation Terraform"
