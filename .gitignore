@@ -1,0 +1,24 @@
+# Terraform
+**/.terraform/
+**/terraform.tfvars
+**/*.tfstate
+**/*.tfstate.*
+crash.log
+crash.*.log
+
+# Ansible secrets / local inventory
+ansible/inventory/prod.yml
+ansible/roles/unbound/files/certs/*.pem
+ansible/roles/unbound/files/certs/*.key
+ansible/roles/unbound/files/certs/*.crt
+ansible/roles/unbound/files/certs/*.csr
+
+# Logs
+*.log
+/tmp/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
