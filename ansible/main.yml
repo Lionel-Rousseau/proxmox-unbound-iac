@@ -1,0 +1,80 @@
+- name: Install Unbound and required tools
+  ansible.builtin.apt:
+    name:
+      - unbound
+      - unbound-anchor
+      - dnsutils
+      - ca-certificates
+      - curl
+      - openssl
+    state: present
+    update_cache: true
+
+- name: Ensure Unbound directory exists
+  ansible.builtin.file:
+    path: /etc/unbound
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download root hints
+  ansible.builtin.get_url:
+    url: https://www.internic.net/domain/named.cache
+    dest: "{{ unbound_root_hints_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure Debian Unbound root trust anchor exists
+  ansible.builtin.stat:
+    path: /var/lib/unbound/root.key
+  register: unbound_root_key
+
+- name: Fail if Debian Unbound root trust anchor is missing
+  ansible.builtin.fail:
+    msg: "Missing /var/lib/unbound/root.key. Check Debian Unbound installation."
+  when: not unbound_root_key.stat.exists
+
+- name: Deploy DoT certificate
+  ansible.builtin.copy:
+    src: certs/fullchain.pem
+    dest: "{{ unbound_tls_service_pem }}"
+    owner: root
+    group: root
+    mode: "0644"
+  when: unbound_tls_enabled | bool
+
+- name: Deploy DoT private key
+  ansible.builtin.copy:
+    src: certs/privkey.pem
+    dest: "{{ unbound_tls_service_key }}"
+    owner: root
+    group: unbound
+    mode: "0640"
+  when: unbound_tls_enabled | bool
+
+- name: Create Unbound log file
+  ansible.builtin.file:
+    path: "{{ unbound_logfile }}"
+    state: touch
+    owner: unbound
+    group: unbound
+    mode: "0644"
+    modification_time: preserve
+    access_time: preserve
+
+- name: Deploy Unbound configuration
+  ansible.builtin.template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf.d/local-resolver.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Check and restart Unbound
+
+- name: Ensure Unbound is enabled and started
+  ansible.builtin.systemd:
+    name: unbound
+    enabled: true
+    state: started
