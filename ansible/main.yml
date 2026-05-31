@@ -1,0 +1,10 @@
+- name: Check Unbound configuration
+  ansible.builtin.command: unbound-checkconf
+  changed_when: false
+  listen: Check and restart Unbound
+
+- name: Restart Unbound
+  ansible.builtin.systemd:
+    name: unbound
+    state: restarted
+  listen: Check and restart Unbound
