@@ -1,0 +1,50 @@
+unbound_listen_ipv4: "0.0.0.0"
+unbound_listen_ipv6: "::0"
+unbound_enable_ipv6: false
+
+unbound_tls_enabled: true
+unbound_tls_port: 853
+unbound_tls_service_key: /etc/unbound/privkey.pem
+unbound_tls_service_pem: /etc/unbound/fullchain.pem
+
+unbound_allowed_subnets:
+  - "127.0.0.0/8"
+  - "10.10.10.0/24"
+
+unbound_private_addresses:
+  - "10.0.0.0/8"
+  - "172.16.0.0/12"
+  - "192.168.0.0/16"
+  - "169.254.0.0/16"
+
+unbound_local_zone: "lab.example."
+
+unbound_local_records:
+  - name: "gateway.lab.example."
+    type: "A"
+    value: "10.10.10.1"
+  - name: "dns1.lab.example."
+    type: "A"
+    value: "10.10.10.53"
+  - name: "proxmox.lab.example."
+    type: "A"
+    value: "10.10.10.110"
+
+unbound_ptr_records:
+  - ptr: "1.10.10.10.in-addr.arpa."
+    value: "gateway.lab.example."
+  - ptr: "53.10.10.10.in-addr.arpa."
+    value: "dns1.lab.example."
+  - ptr: "110.10.10.10.in-addr.arpa."
+    value: "proxmox.lab.example."
+
+unbound_root_hints_path: /etc/unbound/root.hints
+unbound_logfile: /var/log/unbound/unbound.log
+
+unbound_num_threads: 2
+unbound_msg_cache_size: "64m"
+unbound_rrset_cache_size: "128m"
+
+unbound_dnstap_enabled: false
+unbound_dnstap_ip: "10.10.10.50@6000"
+unbound_dnstap_identity: "unbound-dns1"
