@@ -271,5 +271,5 @@ Le durcissement réseau final reste à adapter selon le contexte : firewall loca
 
 ---
 
-_L'anonymisation des exemples et la relecture de mise en forme du code ont été réalisées avec l'assistance de Claude (Anthropic). Le code, l'architecture et les choix techniques sont de l'auteur._
+_L'anonymisation des exemples et la relecture de mise en forme du code ont été réalisées avec l'assistance de Claude (Anthropic). Le code réel, l'architecture et les choix techniques sont de l'auteur._
 
