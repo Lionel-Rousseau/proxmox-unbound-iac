@@ -8,6 +8,12 @@ Le contenu est anonymisé. Les noms de domaine, adresses IP, identifiants Proxmo
 
 ---
 
+## Origine du projet
+
+Ce dépôt est une version anonymisée et simplifiée d’une brique réellement testée dans un environnement Proxmox de lab. Il ne reprend pas les valeurs de production, mais conserve la logique de provisioning, de configuration et de validation technique.
+
+---
+
 ## Objectif
 
 Dans l'architecture d'origine, Unbound était hébergé dans une VM mutualisée avec d'autres services réseau. Cette brique extrait le service DNS vers un LXC dédié afin de préparer une architecture plus claire :
