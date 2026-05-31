@@ -1,0 +1,5 @@
+- name: Configure Unbound DNS resolver
+  hosts: dns
+  become: true
+  roles:
+    - unbound
