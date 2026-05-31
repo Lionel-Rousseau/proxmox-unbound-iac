@@ -1,5 +1,5 @@
 proxmox_api_url   = "https://proxmox.example.local:8006/api2/json"
-proxmox_api_token = "terraform@pam!tokenid=REDACTED"
+proxmox_api_token = "terraform@pam!provider=REDACTED"
 proxmox_insecure  = true
 
 proxmox_node    = "proxmox-node"
