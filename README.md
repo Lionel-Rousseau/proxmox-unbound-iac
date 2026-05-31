@@ -113,6 +113,7 @@ proxmox-unbound-iac/
 ├── scripts/
 │   └── dns1_setup.sh
 └── docs/
+    ├── sample_run.log
     └── validation.md
 ```
 
