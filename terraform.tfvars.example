@@ -1,0 +1,24 @@
+proxmox_api_url   = "https://proxmox.example.local:8006/api2/json"
+proxmox_api_token = "terraform@pam!tokenid=REDACTED"
+proxmox_insecure  = true
+
+proxmox_node    = "proxmox-node"
+lxc_vmid        = 150
+lxc_hostname    = "lxc-unbound-01"
+debian_template = "local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst"
+
+storage = "local-zfs"
+bridge  = "vmbr0"
+vlan_id = 0
+
+lxc_ip_cidr = "10.10.10.53/24"
+gateway     = "10.10.10.1"
+
+bootstrap_dns_servers = ["10.10.10.10"]
+ssh_public_key_path   = "~/.ssh/id_ed25519.pub"
+
+lxc_cpu_cores = 2
+lxc_memory_mb = 1024
+lxc_disk_gb   = 8
+
+enable_ipv6_autoconf = false
