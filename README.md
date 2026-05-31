@@ -149,7 +149,7 @@ Adapter les valeurs :
 
 ```hcl
 proxmox_api_url   = "https://proxmox.example.local:8006/api2/json"
-proxmox_api_token = "terraform@pam!token=REDACTED"
+proxmox_api_token = "terraform@pam!provider=REDACTED"
 proxmox_node      = "proxmox-node"
 lxc_vmid          = 150
 lxc_ip_cidr       = "10.10.10.53/24"
