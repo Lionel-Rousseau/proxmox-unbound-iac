@@ -269,3 +269,7 @@ Elle documente une pratique d'exploitation :
 
 Le durcissement réseau final reste à adapter selon le contexte : firewall local, filtrage Proxmox, règles OPNsense, segmentation VLAN ou ACL dédiées.
 
+---
+
+_L'anonymisation des exemples et la relecture de mise en forme du code ont été réalisées avec l'assistance de Claude (Anthropic). Le code, l'architecture et les choix techniques sont de l'auteur._
+
