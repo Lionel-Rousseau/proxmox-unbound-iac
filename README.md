@@ -126,7 +126,9 @@ proxmox-unbound-iac/
 │           ├── tasks/main.yml
 │           ├── handlers/main.yml
 │           ├── templates/unbound.conf.j2
-│           └── files/certs/.gitkeep
+│           └── files/
+│               └── certs/
+│                   ├── README.md
 ├── scripts/
 │   └── dns1_setup.sh
 └── docs/
