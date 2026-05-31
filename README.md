@@ -30,6 +30,44 @@ Ansible    -> installe et configure Unbound
 Bash       -> reconstruit et teste le service de bout en bout
 ```
 
+```mermaid
+flowchart TB
+ subgraph admin["Poste d'administration"]
+        TF["Terraform"]
+        AN["Ansible"]
+        SH["dns1_setup.sh (orchestration)"]
+  end
+ subgraph lxc["LXC unbound-01 (Debian)........."]
+        UB["Unbound DNSSEC + DoT"]
+  end
+ subgraph pve["Hôte Proxmox VE"]
+        API["API Proxmox (port 8006)"]
+        lxc
+  end
+    SH --> TF & AN
+    TF -- provisioning --> API
+    API --> lxc
+    AN -- SSH install + config --> UB
+    CL["Clients LAN 10.10.10.0/24"] -- 53 UDP/TCP — 853 DoT --> UB
+    UB -- DNSSEC --> NET["Internet résolution récursive"]
+
+     TF:::admin
+     AN:::admin
+     SH:::admin
+     UB:::host
+     API:::host
+     lxc:::host
+     CL:::client
+     NET:::net
+    classDef admin fill:#fdf4ff,stroke:#e879f9
+    classDef host fill:#eef2ff,stroke:#818cf8
+    classDef client fill:#f0fdf4,stroke:#4ade80
+    classDef net fill:#f0f9ff,stroke:#38bdf8
+    style NET stroke:#D50000,color:#D50000,fill:#FFCDD2
+    style admin stroke:#e879f9
+    style pve stroke:#2962FF
+```
+
 ---
 
 ## Arborescence
