@@ -1,4 +1,4 @@
-# proxmox-unbound-iac
+# Résolveur DNS Unbound en LXC Proxmox — IaC (Terraform + Ansible) + validation DNSSEC/DoT
 
 Provisionnement et configuration reproductibles d'un résolveur DNS Unbound en LXC Proxmox.
 
