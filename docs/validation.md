@@ -15,7 +15,7 @@ Expected result:
 - UDP/53 listener ;
 - TCP/53 listener ;
 - TCP/853 listener.
-- 
+
 ## Standard DNS
 
 ```bash
@@ -35,7 +35,7 @@ Expected result:
 
 - valid domain: response with the `ad` flag ;
 - invalid domain: `SERVFAIL`.
-- 
+
 ## DNS-over-TLS
 
 ```bash
