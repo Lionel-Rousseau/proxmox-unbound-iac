@@ -1,22 +1,21 @@
+[2026-05-31 18:17:52] Pre-checks
+  [OK]   Local pre-checks
 
-[2026-05-31 18:17:52] Pré-vérifications
-  [OK]   Pré-vérifications locales
+WARNING: destructive operation.
+This script will destroy then recreate the DNS1 LXC.
 
-ATTENTION : opération destructive.
-Ce script va détruire puis recréer le LXC DNS1.
-
-  VMID Terraform attendu : 150
-  Ressource Terraform    : proxmox_virtual_environment_container.unbound_01
-  IP DNS                 : 10.10.10.53
-  Hostname DNS           : dns1.lab.example
-  Terraform dir          : /root/proxmox-unbound-iac/terraform/proxmox
-  Ansible dir            : /root/proxmox-unbound-iac/ansible
+  Expected Terraform VMID : 150
+  Terraform resource      : proxmox_virtual_environment_container.unbound_01
+  DNS IP                  : 10.10.10.53
+  DNS hostname            : dns1.lab.example
+  Terraform dir           : /root/proxmox-unbound-iac/terraform/proxmox
+  Ansible dir             : /root/proxmox-unbound-iac/ansible
 
 
-[2026-05-31 18:17:52] Nettoyage known_hosts pour 10.10.10.53
-  [OK]   Ancienne empreinte SSH supprimée si présente
+[2026-05-31 18:17:52] Cleaning known_hosts for 10.10.10.53
+  [OK]   Old SSH fingerprint removed if present
 
-[2026-05-31 18:17:52] Initialisation Terraform
+[2026-05-31 18:17:52] Terraform initialization
 
 Initializing the backend...
 
@@ -37,7 +36,7 @@ Success! The configuration is valid.
 
   [OK]   Terraform init/validate OK
 
-[2026-05-31 18:17:52] Destruction Terraform ciblée du LXC 150
+[2026-05-31 18:17:52] Targeted Terraform destruction of LXC 150
 proxmox_virtual_environment_container.unbound_01: Refreshing state... [id=150]
 
 Terraform used the selected providers to generate the following execution
@@ -181,12 +180,12 @@ proxmox_virtual_environment_container.unbound_01: Destruction complete after 3s
 ╵
 
 Destroy complete! Resources: 1 destroyed.
-  [OK]   LXC détruit via Terraform
+  [OK]   LXC destroyed via Terraform
 
-[2026-05-31 18:17:56] Nouvelle suppression known_hosts après destruction
-  [OK]   known_hosts nettoyé avant recréation
+[2026-05-31 18:17:56] Removing known_hosts again after destruction
+  [OK]   known_hosts cleaned before recreation
 
-[2026-05-31 18:17:56] Création du LXC DNS1 via Terraform
+[2026-05-31 18:17:56] Creating the DNS1 LXC via Terraform
 
 Terraform used the selected providers to generate the following execution
 plan. Resource actions are indicated with the following symbols:
@@ -297,12 +296,12 @@ proxmox_virtual_environment_container.unbound_01: Creating...
 proxmox_virtual_environment_container.unbound_01: Creation complete after 3s [id=150]
 
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
-  [OK]   LXC créé via Terraform
+  [OK]   LXC created via Terraform
 
-[2026-05-31 18:17:59] Attente SSH sur 10.10.10.53
-  [OK]   SSH disponible sur 10.10.10.53
+[2026-05-31 18:17:59] Waiting for SSH on 10.10.10.53
+  [OK]   SSH available on 10.10.10.53
 
-[2026-05-31 18:18:01] Validation Ansible ping/pong
+[2026-05-31 18:18:01] Ansible ping/pong validation
 lxc-unbound-01 | SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3.13"
@@ -312,7 +311,7 @@ lxc-unbound-01 | SUCCESS => {
 }
   [OK]   Ansible ping OK
 
-[2026-05-31 18:18:02] Installation et configuration Unbound via Ansible
+[2026-05-31 18:18:02] Installing and configuring Unbound via Ansible
 
 PLAY [Configure Unbound DNS resolver] ******************************************
 
@@ -355,67 +354,67 @@ changed: [lxc-unbound-01]
 PLAY RECAP *********************************************************************
 lxc-unbound-01             : ok=12   changed=7    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
 
-  [OK]   Playbook Ansible terminé sans erreur
+  [OK]   Ansible playbook completed without error
 
-[2026-05-31 18:18:12] Vérifications système Unbound dans le LXC
+[2026-05-31 18:18:12] Unbound system checks inside the LXC
   [OK]   unbound-checkconf OK
-  [OK]   service Unbound actif
-  [OK]   écoute UDP/53
-  [OK]   écoute TCP/53
-  [OK]   écoute TCP/853
+  [OK]   Unbound service active
+  [OK]   UDP/53 listener
+  [OK]   TCP/53 listener
+  [OK]   TCP/853 listener
 
-[2026-05-31 18:18:13] Tests DNS classiques depuis Kali
+[2026-05-31 18:18:13] Standard DNS tests from Kali
   [OK]   local-data gateway.lab.example -> 10.10.10.1
   [OK]   local-data dns1.lab.example -> 10.10.10.53
-  [OK]   résolution externe UDP/53
-  [OK]   résolution externe TCP/53
-  [OK]   PTR local 10.10.10.110 -> proxmox.lab.example
+  [OK]   external resolution UDP/53
+  [OK]   external resolution TCP/53
+  [OK]   local PTR 10.10.10.110 -> proxmox.lab.example
 
-[2026-05-31 18:18:13] Tests DNSSEC
-  [OK]   DNSSEC valide avec flag AD
-  [OK]   DNSSEC invalide -> SERVFAIL
-  [OK]   DNSSEC sigfail -> SERVFAIL (test complémentaire)
+[2026-05-31 18:18:13] DNSSEC tests
+  [OK]   DNSSEC valid with AD flag
+  [OK]   DNSSEC invalid -> SERVFAIL
+  [OK]   DNSSEC sigfail -> SERVFAIL (additional test)
 
-[2026-05-31 18:18:47] Tests DNS-over-TLS TCP/853
-  [OK]   TLS handshake 853 valide
-  [OK]   requête DoT via kdig
+[2026-05-31 18:18:47] DNS-over-TLS tests TCP/853
+  [OK]   TLS handshake 853 valid
+  [OK]   DoT query via kdig
 
 ============================================================
-Résumé dns1_setup.sh
+dns1_setup.sh summary
 ============================================================
-Log complet : /tmp/dns1_setup_20260531_181752.log
+Full log : /tmp/dns1_setup_20260531_181752.log
 
-Points OK :
-  - Pré-vérifications locales
-  - Ancienne empreinte SSH supprimée si présente
+OK items:
+  - Local pre-checks
+  - Old SSH fingerprint removed if present
   - Terraform init/validate OK
-  - LXC détruit via Terraform
-  - known_hosts nettoyé avant recréation
-  - LXC créé via Terraform
-  - SSH disponible sur 10.10.10.53
+  - LXC destroyed via Terraform
+  - known_hosts cleaned before recreation
+  - LXC created via Terraform
+  - SSH available on 10.10.10.53
   - Ansible ping OK
-  - Playbook Ansible terminé sans erreur
+  - Ansible playbook completed without error
   - unbound-checkconf OK
-  - service Unbound actif
-  - écoute UDP/53
-  - écoute TCP/53
-  - écoute TCP/853
+  - Unbound service active
+  - UDP/53 listener
+  - TCP/53 listener
+  - TCP/853 listener
   - local-data gateway.lab.example -> 10.10.10.1
   - local-data dns1.lab.example -> 10.10.10.53
-  - résolution externe UDP/53
-  - résolution externe TCP/53
-  - PTR local 10.10.10.110 -> proxmox.lab.example
-  - DNSSEC valide avec flag AD
-  - DNSSEC invalide -> SERVFAIL
-  - DNSSEC sigfail -> SERVFAIL (test complémentaire)
-  - TLS handshake 853 valide
-  - requête DoT via kdig
+  - external resolution UDP/53
+  - external resolution TCP/53
+  - local PTR 10.10.10.110 -> proxmox.lab.example
+  - DNSSEC valid with AD flag
+  - DNSSEC invalid -> SERVFAIL
+  - DNSSEC sigfail -> SERVFAIL (additional test)
+  - TLS handshake 853 valid
+  - DoT query via kdig
 
-Points en avertissement :
-  Aucun
+Warning items:
+  None
 
-Points en échec :
-  Aucun
+Failure items:
+  None
 ============================================================
 
-Résultat final : OK - DNS1 est recréé, configuré et fonctionnel sur 53/853.
+Final result: OK - DNS1 recreated, configured and operational on 53/853.
