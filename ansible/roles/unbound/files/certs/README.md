@@ -1,17 +1,19 @@
 # Note
 
-## Certificats
+## Certificates
 
-Avant d’activer DoT, il faut déposer les certificats :
+Before enabling DoT, you must place the certificates:
+
 ```text
 ansible/roles/unbound/files/certs/fullchain.pem
 ansible/roles/unbound/files/certs/privkey.pem
 ```
 ---
 
-## Désactivation de DoT
+## Disabling DoT
 
-Si DNS-over-TLS n'est pas utilisé, désactiver l'option suivante :
+If DNS-over-TLS is not used, disable the following option:
+
 ```text
 unbound_tls_enabled: false
 ```
