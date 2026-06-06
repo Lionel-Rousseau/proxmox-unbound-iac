@@ -26,7 +26,7 @@ usage() {
   cat <<EOF
 Usage: $0 [--yes]
 
-Variables surchargeables :
+Overridable variables:
   BASE_DIR, TF_DIR, ANSIBLE_DIR, INVENTORY, PLAYBOOK, ANSIBLE_GROUP
   VMID, DNS_IP, DNS_HOSTNAME, SSH_KEY, KNOWN_HOSTS, TF_RESOURCE
 EOF
@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -y|--yes) AUTO_YES="true"; shift ;;
     -h|--help) usage; exit 0 ;;
-    *) echo "Argument inconnu: $1" >&2; usage; exit 2 ;;
+    *) echo "Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
 done
 
@@ -46,10 +46,10 @@ log()  { printf '\n[%s] %s\n' "$(date '+%F %T')" "$*"; }
 ok()   { printf '  [OK]   %s\n' "$*"; OK_ITEMS+=("$*"); }
 warn() { printf '  [WARN] %s\n' "$*"; WARN_ITEMS+=("$*"); }
 fail() { printf '  [FAIL] %s\n' "$*"; FAIL_ITEMS+=("$*"); }
-die()  { printf '\n[ERREUR] %s\n' "$*" >&2; exit 1; }
+die()  { printf '\n[ERROR] %s\n' "$*" >&2; exit 1; }
 
 require_cmd() {
-  command -v "$1" >/dev/null 2>&1 || die "Commande manquante: $1"
+  command -v "$1" >/dev/null 2>&1 || die "Missing command: $1"
 }
 
 check_cmd() {
@@ -72,7 +72,7 @@ check_shell() {
     return 0
   fi
   fail "$label"
-  echo "--- commande ---"
+  echo "--- command ---"
   echo "$cmd"
   echo "--- stdout ---"
   cat /tmp/dns1_check.out || true
@@ -89,7 +89,7 @@ warn_shell() {
     return 0
   fi
   warn "$label"
-  echo "--- commande ---"
+  echo "--- command ---"
   echo "$cmd"
   echo "--- stdout ---"
   cat /tmp/dns1_check.out || true
@@ -108,133 +108,133 @@ remote() {
 }
 
 wait_for_ssh() {
-  log "Attente SSH sur $DNS_IP"
+  log "Waiting for SSH on $DNS_IP"
   for _ in $(seq 1 60); do
     if remote true >/dev/null 2>&1; then
-      ok "SSH disponible sur $DNS_IP"
+      ok "SSH available on $DNS_IP"
       return 0
     fi
     sleep 2
   done
-  die "SSH indisponible sur $DNS_IP"
+  die "SSH unavailable on $DNS_IP"
 }
 
 print_summary() {
   echo
   echo "============================================================"
-  echo "Résumé dns1_setup.sh"
+  echo "dns1_setup.sh summary"
   echo "============================================================"
-  echo "Log complet : $LOG_FILE"
+  echo "Full log: $LOG_FILE"
   echo
-  echo "Points OK :"
-  [[ ${#OK_ITEMS[@]} -eq 0 ]] && echo "  Aucun" || printf '  - %s\n' "${OK_ITEMS[@]}"
+  echo "OK items:"
+  [[ ${#OK_ITEMS[@]} -eq 0 ]] && echo "  None" || printf '  - %s\n' "${OK_ITEMS[@]}"
   echo
-  echo "Points en avertissement :"
-  [[ ${#WARN_ITEMS[@]} -eq 0 ]] && echo "  Aucun" || printf '  - %s\n' "${WARN_ITEMS[@]}"
+  echo "Warning items:"
+  [[ ${#WARN_ITEMS[@]} -eq 0 ]] && echo "  None" || printf '  - %s\n' "${WARN_ITEMS[@]}"
   echo
-  echo "Points en échec :"
-  [[ ${#FAIL_ITEMS[@]} -eq 0 ]] && echo "  Aucun" || printf '  - %s\n' "${FAIL_ITEMS[@]}"
+  echo "Failure items:"
+  [[ ${#FAIL_ITEMS[@]} -eq 0 ]] && echo "  None" || printf '  - %s\n' "${FAIL_ITEMS[@]}"
   echo "============================================================"
 }
 
-trap 'echo; echo "Erreur ligne $LINENO"; print_summary' ERR
-trap 'echo; echo "Interruption utilisateur"; print_summary; exit 130' INT
+trap 'echo; echo "Error on line $LINENO"; print_summary' ERR
+trap 'echo; echo "User interruption"; print_summary; exit 130' INT
 
-log "Pré-vérifications"
+log "Pre-checks"
 for cmd in terraform ansible-playbook ansible ssh ssh-keygen dig openssl kdig; do
   require_cmd "$cmd"
 done
 
-[[ -d "$TF_DIR" ]] || die "Dossier Terraform introuvable: $TF_DIR"
-[[ -d "$ANSIBLE_DIR" ]] || die "Dossier Ansible introuvable: $ANSIBLE_DIR"
-[[ -f "$ANSIBLE_DIR/$INVENTORY" ]] || die "Inventaire introuvable: $ANSIBLE_DIR/$INVENTORY"
-[[ -f "$ANSIBLE_DIR/$PLAYBOOK" ]] || die "Playbook introuvable: $ANSIBLE_DIR/$PLAYBOOK"
-[[ -f "$SSH_KEY" ]] || die "Clé SSH introuvable: $SSH_KEY"
-ok "Pré-vérifications locales"
+[[ -d "$TF_DIR" ]] || die "Terraform directory not found: $TF_DIR"
+[[ -d "$ANSIBLE_DIR" ]] || die "Ansible directory not found: $ANSIBLE_DIR"
+[[ -f "$ANSIBLE_DIR/$INVENTORY" ]] || die "Inventory not found: $ANSIBLE_DIR/$INVENTORY"
+[[ -f "$ANSIBLE_DIR/$PLAYBOOK" ]] || die "Playbook not found: $ANSIBLE_DIR/$PLAYBOOK"
+[[ -f "$SSH_KEY" ]] || die "SSH key not found: $SSH_KEY"
+ok "Local pre-checks"
 
 cat <<EOF
 
-ATTENTION : opération destructive.
-Ce script va détruire puis recréer le LXC DNS.
+WARNING: destructive operation.
+This script will destroy then recreate the DNS LXC.
 
-  VMID Terraform attendu : $VMID
-  Ressource Terraform    : $TF_RESOURCE
-  IP DNS                 : $DNS_IP
-  Hostname DNS           : $DNS_HOSTNAME
-  Terraform dir          : $TF_DIR
-  Ansible dir            : $ANSIBLE_DIR
+  Expected Terraform VMID : $VMID
+  Terraform resource      : $TF_RESOURCE
+  DNS IP                  : $DNS_IP
+  DNS hostname            : $DNS_HOSTNAME
+  Terraform dir           : $TF_DIR
+  Ansible dir             : $ANSIBLE_DIR
 
 EOF
 
 if [[ "$AUTO_YES" != "true" ]]; then
-  read -r -p "Confirmer la destruction/recréation du LXC $VMID ? Tape 'yes' : " confirm
-  [[ "$confirm" == "yes" ]] || die "Confirmation refusée"
+  read -r -p "Confirm destruction/recreation of LXC $VMID ? Type 'yes': " confirm
+  [[ "$confirm" == "yes" ]] || die "Confirmation declined"
 fi
 
-log "Nettoyage known_hosts pour $DNS_IP"
+log "Cleaning known_hosts for $DNS_IP"
 ssh-keygen -f "$KNOWN_HOSTS" -R "$DNS_IP" >/dev/null 2>&1 || true
-ok "Ancienne empreinte SSH supprimée si présente"
+ok "Old SSH fingerprint removed if present"
 
-log "Initialisation Terraform"
+log "Terraform initialization"
 cd "$TF_DIR"
 terraform init -input=false
 terraform validate
 ok "Terraform init/validate OK"
 
-log "Destruction Terraform ciblée du LXC $VMID"
+log "Targeted Terraform destruction of LXC $VMID"
 if terraform state list | grep -qx "$TF_RESOURCE"; then
   terraform destroy -target="$TF_RESOURCE" -auto-approve
-  # L’usage de -target est volontaire ici dans le cadre du scénario de rebuild contrôlé d’une ressource unique (environnement pour exemple).
-  ok "LXC détruit via Terraform"
+  # The use of -target is intentional here, as part of a controlled rebuild scenario for a single resource (example environment).
+  ok "LXC destroyed via Terraform"
 else
-  ok "Aucune ressource Terraform existante à détruire"
+  ok "No existing Terraform resource to destroy"
 fi
 
 ssh-keygen -f "$KNOWN_HOSTS" -R "$DNS_IP" >/dev/null 2>&1 || true
-ok "known_hosts nettoyé avant recréation"
+ok "known_hosts cleaned before recreation"
 
-log "Création du LXC DNS via Terraform"
+log "Creating the DNS LXC via Terraform"
 terraform apply -auto-approve
-ok "LXC créé via Terraform"
+ok "LXC created via Terraform"
 
 wait_for_ssh
 
-log "Validation Ansible ping/pong"
+log "Ansible ping/pong validation"
 cd "$ANSIBLE_DIR"
 ansible -i "$INVENTORY" "$ANSIBLE_GROUP" -m ping
 ok "Ansible ping OK"
 
-log "Installation et configuration Unbound via Ansible"
+log "Installing and configuring Unbound via Ansible"
 ansible-playbook -i "$INVENTORY" "$PLAYBOOK"
-ok "Playbook Ansible terminé sans erreur"
+ok "Ansible playbook completed without error"
 
-log "Vérifications système Unbound"
+log "Unbound system checks"
 check_cmd "unbound-checkconf OK" remote unbound-checkconf || true
-check_cmd "service Unbound actif" remote systemctl is-active --quiet unbound || true
-check_cmd "écoute UDP/53" remote bash -lc "ss -H -lun 'sport = :53' | grep -q ." || true
-check_cmd "écoute TCP/53" remote bash -lc "ss -H -ltn 'sport = :53' | grep -q ." || true
-check_cmd "écoute TCP/853" remote bash -lc "ss -H -ltn 'sport = :853' | grep -q ." || true
+check_cmd "Unbound service active" remote systemctl is-active --quiet unbound || true
+check_cmd "UDP/53 listener" remote bash -lc "ss -H -lun 'sport = :53' | grep -q ." || true
+check_cmd "TCP/53 listener" remote bash -lc "ss -H -ltn 'sport = :53' | grep -q ." || true
+check_cmd "TCP/853 listener" remote bash -lc "ss -H -ltn 'sport = :853' | grep -q ." || true
 
-log "Tests DNS"
-check_shell "résolution locale DNS" "dig @$DNS_IP $DNS_HOSTNAME +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
-check_shell "résolution externe UDP/53" "dig @$DNS_IP cloudflare.com A +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
-check_shell "résolution externe TCP/53" "dig +tcp @$DNS_IP cloudflare.com A +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
-check_shell "DNSSEC valide avec flag AD" "dig @$DNS_IP sigok.verteiltesysteme.net +dnssec | grep -Eq 'flags:.* ad'" || true
-check_shell "DNSSEC invalide -> SERVFAIL" "dig @$DNS_IP dnssec-failed.org +time=5 +tries=1 | grep -q 'status: SERVFAIL'" || true
-warn_shell "DNSSEC sigfail -> SERVFAIL (test complémentaire)" "for i in 1 2 3; do out=\$(dig @$DNS_IP sigfail.verteiltesysteme.net +time=10 +tries=3); echo \"\$out\"; echo \"\$out\" | grep -q 'status: SERVFAIL' && exit 0; sleep 2; done; exit 1" || true
+log "DNS tests"
+check_shell "local DNS resolution" "dig @$DNS_IP $DNS_HOSTNAME +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
+check_shell "external resolution UDP/53" "dig @$DNS_IP cloudflare.com A +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
+check_shell "external resolution TCP/53" "dig +tcp @$DNS_IP cloudflare.com A +short | grep -Eq '^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$'" || true
+check_shell "DNSSEC valid with AD flag" "dig @$DNS_IP sigok.verteiltesysteme.net +dnssec | grep -Eq 'flags:.* ad'" || true
+check_shell "DNSSEC invalid -> SERVFAIL" "dig @$DNS_IP dnssec-failed.org +time=5 +tries=1 | grep -q 'status: SERVFAIL'" || true
+warn_shell "DNSSEC sigfail -> SERVFAIL (additional test)" "for i in 1 2 3; do out=\$(dig @$DNS_IP sigfail.verteiltesysteme.net +time=10 +tries=3); echo \"\$out\"; echo \"\$out\" | grep -q 'status: SERVFAIL' && exit 0; sleep 2; done; exit 1" || true
 
-log "Tests DNS-over-TLS"
-check_shell "TLS handshake 853 valide" "echo | openssl s_client -connect $DNS_IP:853 -servername $DNS_HOSTNAME 2>/dev/null | grep -q 'Verify return code: 0 (ok)'" || true
-check_shell "requête DoT via kdig" "kdig @$DNS_IP +tls cloudflare.com | grep -q 'status: NOERROR'" || true
+log "DNS-over-TLS tests"
+check_shell "TLS handshake 853 valid" "echo | openssl s_client -connect $DNS_IP:853 -servername $DNS_HOSTNAME 2>/dev/null | grep -q 'Verify return code: 0 (ok)'" || true
+check_shell "DoT query via kdig" "kdig @$DNS_IP +tls cloudflare.com | grep -q 'status: NOERROR'" || true
 
 print_summary
 
 if [[ ${#FAIL_ITEMS[@]} -gt 0 ]]; then
   echo
-  echo "Résultat final : ÉCHEC partiel, voir les points ci-dessus."
+  echo "Final result: partial FAILURE, see the items above."
   exit 1
 fi
 
 echo
-echo "Résultat final : OK - DNS est recréé, configuré et fonctionnel sur 53/853."
+echo "Final result: OK - DNS recreated, configured and operational on 53/853."
 exit 0
