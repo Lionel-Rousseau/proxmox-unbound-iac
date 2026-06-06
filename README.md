@@ -1,58 +1,58 @@
-# Résolveur DNS Unbound en LXC Proxmox - IaC (Terraform + Ansible) + validation DNSSEC/DoT
+# Unbound DNS resolver in a Proxmox LXC - IaC (Terraform + Ansible) + DNSSEC/DoT validation
 
-Provisionnement et configuration reproductibles d'un résolveur DNS Unbound en LXC Proxmox.
+Reproducible provisioning and configuration of an Unbound DNS resolver in a Proxmox LXC.
 
-Ce dépôt présente une brique d'infrastructure simple, volontairement limitée et testable : créer un conteneur LXC dédié avec Terraform, installer et configurer Unbound avec Ansible, puis valider automatiquement la résolution DNS classique, DNSSEC et DNS-over-TLS.
+This repository presents a simple infrastructure building block, deliberately limited and testable: create a dedicated LXC container with Terraform, install and configure Unbound with Ansible, then automatically validate standard DNS resolution, DNSSEC and DNS-over-TLS.
 
-Le contenu est anonymisé. Les noms de domaine, adresses IP, identifiants Proxmox, certificats TLS et enregistrements DNS internes sont fournis sous forme d'exemples.
-
----
-
-## Origine du projet
-
-Ce dépôt est une version anonymisée et simplifiée d’une brique réellement testée dans un environnement Proxmox de lab. Il ne reprend pas les valeurs de production, mais conserve la logique de provisioning, de configuration et de validation technique.
+The content is anonymized. Domain names, IP addresses, Proxmox credentials, TLS certificates and internal DNS records are provided as examples.
 
 ---
 
-## Objectif
+## Project background
 
-Dans l'architecture d'origine, Unbound était hébergé dans une VM mutualisée avec d'autres services réseau. Cette brique extrait le service DNS vers un LXC dédié afin de préparer une architecture plus claire :
-
-- séparation des responsabilités ;
-- provisioning reproductible ;
-- configuration versionnée ;
-- tests de non-régression ;
-- préparation à un futur second résolveur DNS.
-
-Le périmètre est volontairement restreint : ce dépôt ne couvre pas le firewall, les VLAN, le DHCP ni une HA complète. Il documente uniquement la création et la validation d'un résolveur DNS interne.
+This repository is an anonymized and simplified version of a building block actually tested in a Proxmox lab environment. It does not reuse production values, but keeps the same provisioning, configuration and technical validation logic.
 
 ---
 
-## Chaîne utilisée
+## Objective
+
+In the original architecture, Unbound was hosted in a VM shared with other network services. This building block extracts the DNS service into a dedicated LXC in order to prepare a cleaner architecture:
+
+- separation of concerns ;
+- reproducible provisioning ;
+- version-controlled configuration ;
+- regression tests ;
+- groundwork for a future second DNS resolver.
+
+The scope is deliberately limited: this repository does not cover the firewall, the VLANs, DHCP or full HA. It documents only the creation and validation of an internal DNS resolver.
+
+---
+
+## Toolchain
 
 ```text
-Terraform  -> crée le LXC Proxmox
-Ansible    -> installe et configure Unbound
-Bash       -> reconstruit et teste le service de bout en bout
+Terraform  -> creates the Proxmox LXC
+Ansible    -> installs and configures Unbound
+Bash       -> rebuilds and tests the service end to end
 ```
 ---
 
-## Compétences démontrées
+## Skills demonstrated
 
-- Infrastructure as Code avec Terraform sur Proxmox VE
-- automatisation de configuration avec Ansible
-- exploitation Linux & systemd
-- configuration d’un résolveur récursif Unbound
+- Infrastructure as Code with Terraform on Proxmox VE
+- configuration automation with Ansible
+- Linux & systemd operations
+- configuration of a recursive Unbound resolver
 - DNSSEC, DNS-over-TLS, root hints, trust anchor
-- validation technique automatisée par script Bash
-- anonymisation d’un cas réel pour publication portfolio
+- automated technical validation through a Bash script
+- anonymization of a real case for portfolio publication
 ---
 
-## Schéma
+## Diagram
 
 ```mermaid
 flowchart TB
- subgraph admin["Poste d'administration"]
+ subgraph admin["Admin workstation"]
         TF["Terraform"]
         AN["Ansible"]
         SH["dns1_setup.sh (orchestration)"]
@@ -60,16 +60,16 @@ flowchart TB
  subgraph lxc["LXC unbound-01 (Debian)........."]
         UB["Unbound DNSSEC + DoT"]
   end
- subgraph pve["Hôte Proxmox VE"]
-        API["API Proxmox (port 8006)"]
+ subgraph pve["Proxmox VE host"]
+        API["Proxmox API (port 8006)"]
         lxc
   end
     SH --> TF & AN
     TF -- provisioning --> API
     API --> lxc
     AN -- SSH install + config --> UB
-    CL["Clients LAN 10.10.10.0/24"] -- 53 UDP/TCP — 853 DoT --> UB
-    UB -- DNSSEC --> NET["Internet résolution récursive"]
+    CL["LAN clients 10.10.10.0/24"] -- 53 UDP/TCP - 853 DoT --> UB
+    UB -- DNSSEC --> NET["Internet recursive resolution"]
 
      TF:::admin
      AN:::admin
@@ -104,7 +104,7 @@ flowchart TB
 
 ---
 
-## Arborescence
+## Directory layout
 
 ```text
 proxmox-unbound-iac/
@@ -138,37 +138,37 @@ proxmox-unbound-iac/
 
 ---
 
-## Prérequis
+## Prerequisites
 
-Poste d'administration :
+Administration host:
 
 - Terraform ;
 - Ansible ;
-- client SSH ;
+- SSH client ;
 - `dig` ;
 - `kdig` ;
 - `openssl`.
 
-Côté Proxmox :
+On the Proxmox side:
 
-- un template LXC Debian disponible ;
-- un stockage compatible LXC ;
-- un bridge réseau LAN ;
-- un token API Proxmox disposant des droits nécessaires ;
-- accès SSH au LXC par clé publique.
+- an available Debian LXC template ;
+- an LXC-compatible storage ;
+- a LAN network bridge ;
+- a Proxmox API token with the required rights ;
+- SSH access to the LXC via public key.
 
 ---
 
-## Déploiement
+## Deployment
 
-Copier l'exemple de variables Terraform :
+Copy the Terraform variables example:
 
 ```bash
 cd terraform/proxmox
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Adapter les valeurs :
+Adjust the values:
 
 ```hcl
 proxmox_api_url   = "https://proxmox.example.local:8006/api2/json"
@@ -181,7 +181,7 @@ storage           = "local-zfs"
 bridge            = "vmbr0"
 ```
 
-Créer le LXC :
+Create the LXC:
 
 ```bash
 terraform init
@@ -189,16 +189,16 @@ terraform validate
 terraform apply
 ```
 
-Copier l'inventaire Ansible :
+Copy the Ansible inventory:
 
 ```bash
 cd ../../ansible
 cp inventory/prod.yml.example inventory/prod.yml
 ```
 
-Adapter l'adresse du LXC et la clé SSH.
+Adjust the LXC address and the SSH key.
 
-Déployer Unbound :
+Deploy Unbound:
 
 ```bash
 ansible -i inventory/prod.yml dns -m ping
@@ -207,9 +207,9 @@ ansible-playbook -i inventory/prod.yml site.yml
 
 ---
 
-## Rebuild complet et validation
+## Full rebuild and validation
 
-Le script `scripts/dns1_setup.sh` permet de reconstruire le LXC et de rejouer toute la chaîne :
+The `scripts/dns1_setup.sh` script rebuilds the LXC and replays the entire chain:
 
 ```bash
 cd proxmox-unbound-iac
@@ -217,92 +217,90 @@ chmod +x scripts/dns1_setup.sh
 ./scripts/dns1_setup.sh --yes
 ```
 
-Il effectue les opérations suivantes :
+It performs the following operations:
 
-1. destruction ciblée de la ressource Terraform ;
-2. recréation du LXC ;
-3. attente SSH ;
-4. vérification Ansible ;
-5. installation/configuration Unbound ;
-6. tests DNS UDP/53, TCP/53, DNSSEC et DNS-over-TLS.
+1. targeted destruction of the Terraform resource ;
+2. recreation of the LXC ;
+3. waiting for SSH ;
+4. Ansible check ;
+5. Unbound install and configuration ;
+6. DNS tests UDP/53, TCP/53, DNSSEC and DNS-over-TLS.
 
-Le script est volontairement destructif. Il doit être utilisé sur un environnement de lab ou sur un service dont la reconstruction est maîtrisée.
+The script is intentionally destructive. It must be used on a lab environment or on a service whose rebuild is fully under control.
 
 ---
-## Journal d'exécution anonymisé
+## Anonymized execution log
 
 
-Un journal d'exécution anonymisé, issu d'un environnement réel est disponible dans
+An anonymized execution log, taken from a real environment, is available in
 [docs/sample_run.log](docs/sample_run.log).
 
 
-Ce fichier sert d'illustration technique : il montre le déroulé complet d'un rebuild validé
-Terraform → Ansible → tests DNS/DNSSEC/DoT et est extrait d'un environnement réel. Il ne représente 
-donc pas fidèlement la sortie du script public présenté ici : les valeurs d'inventaire, hostnames, adresses IP,
-certificats, clés et certains libellés ont été anonymisés ou adaptés pour cette publication.
+This file serves as a technical illustration: it shows the full flow of a validated rebuild
+Terraform -> Ansible -> DNS/DNSSEC/DoT tests and is taken from a real environment. It therefore
+does not faithfully represent the output of the public script presented here: the inventory values, hostnames, IP addresses,
+certificates, keys and some labels have been anonymized or adapted for this publication.
 
 ---
 
-## Tests réalisés
+## Tests performed
 
-La validation automatique couvre :
+The automated validation covers:
 
 - `unbound-checkconf` ;
-- état du service systemd ;
-- écoute UDP/53 ;
-- écoute TCP/53 ;
-- écoute TCP/853 ;
-- résolution d'un nom local ;
-- résolution d'un PTR local ;
-- résolution externe ;
-- validation DNSSEC positive ;
-- validation DNSSEC négative ;
-- handshake TLS sur 853 ;
-- requête DNS-over-TLS via `kdig`.
+- systemd service status ;
+- UDP/53 listener ;
+- TCP/53 listener ;
+- TCP/853 listener ;
+- local name resolution ;
+- local PTR resolution ;
+- external resolution ;
+- positive DNSSEC validation ;
+- negative DNSSEC validation ;
+- TLS handshake on 853 ;
+- DNS-over-TLS query via `kdig`.
 
-Exemple de résultat attendu :
+Example of expected output:
 
 ```text
-Résultat final : OK - DNS1 est recréé, configuré et fonctionnel sur 53/853.
+Final result: OK - DNS1 recreated, configured and operational on 53/853.
 ```
 
 ---
 
-## Données non publiées
+## Data not published
 
-Ce dépôt ne doit pas contenir :
+This repository must not contain:
 
 - `terraform.tfvars` ;
-- fichiers `terraform.tfstate` ;
-- clés privées TLS ;
-- certificats réels ;
-- secrets API Proxmox ;
-- hostnames internes réels ;
-- adresses IP publiques ;
-- exports complets de configuration de production.
+- `terraform.tfstate` files ;
+- TLS private keys ;
+- real certificates ;
+- Proxmox API secrets ;
+- real internal hostnames ;
+- public IP addresses ;
+- full production configuration exports.
 
-Les fichiers nécessaires sont remplacés par des exemples.
-
----
-
-## Limites
-
-Cette brique ne prétend pas couvrir tous les cas de production.
-
-Elle documente une pratique d'exploitation :
-
-- infrastructure décrite par code ;
-- configuration rejouable ;
-- service critique isolé ;
-- tests techniques reproductibles ;
-- publication anonymisée.
-
-`transparent` est utilisé (`local-zone:` dans [ansible/roles/unbound/templates/unbound.conf.j2](ansible/roles/unbound/templates/unbound.conf.j2)) pour ne définir que quelques enregistrements locaux tout en conservant la résolution récursive des autres noms. Il s'agit d'une spécificité personnelle qui est à adapter selon les besoins.
-
-Le durcissement réseau final reste à adapter selon le contexte : firewall local, filtrage Proxmox, règles OPNsense, segmentation VLAN ou ACL dédiées.
+The required files are replaced with examples.
 
 ---
 
-_Français :
-L'anonymisation des données présentées ainsi que la mise en forme du code et des textes en vue de leur publication ont été réalisées avec l'assistance de Claude (Anthropic). L'ensemble a été relu et validé par l'auteur avant publication. Le code réel, l'architecture et les choix techniques sont de l'auteur._
+## Limitations
 
+This building block does not claim to cover every production case.
+
+It documents an operational practice:
+
+- infrastructure described as code ;
+- replayable configuration ;
+- critical service isolated ;
+- reproducible technical tests ;
+- anonymized publication.
+
+`transparent` is used (`local-zone:` in [ansible/roles/unbound/templates/unbound.conf.j2](ansible/roles/unbound/templates/unbound.conf.j2)) to define only a few local records while keeping recursive resolution for all other names. This is a personal choice that should be adapted to your needs.
+
+Final network hardening still has to be adapted to the context: local firewall, Proxmox filtering, OPNsense rules, VLAN segmentation or dedicated ACLs.
+
+---
+
+_The anonymization of the data shown here, together with the formatting of the code and text for publication, was carried out with the assistance of Claude (Anthropic). Everything was reviewed and validated by the author before publication. The actual code, architecture and technical choices are the author's own._
